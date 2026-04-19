@@ -1,0 +1,162 @@
+/* ── RESET & BASE ──────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background: linear-gradient(135deg, #0d1117 0%, #161b22 60%, #1c2333 100%);
+min-height: 100vh;
+color: #c9d1d9;
+padding: 24px 16px;
+}
+
+.container { max-width: 960px; margin: 0 auto; }
+
+/* ── HEADER ──────────────────────────────────────── */
+header { text-align: center; padding: 28px 0 20px; }
+
+.flag-strip {
+display: flex; justify-content: center; gap: 0;
+width: 120px; height: 6px; margin: 0 auto 16px; border-radius: 3px; overflow: hidden;
+}
+.flag-strip .saffron { flex: 1; background: #FF9933; }
+.flag-strip .white   { flex: 1; background: #FFFFFF; }
+.flag-strip .green   { flex: 1; background: #138808; }
+
+header h1 { font-size: 2.2rem; color: #FF9933; margin-bottom: 8px; }
+header p  { color: #8b949e; font-size: 1rem; }
+
+/* ── CARD ────────────────────────────────────────── */
+.card {
+background: rgba(255,255,255,0.04);
+border: 1px solid rgba(255,255,255,0.08);
+border-radius: 14px;
+padding: 22px;
+margin-top: 20px;
+}
+.card h3 { color: #FF9933; margin-bottom: 14px; font-size: 1rem; }
+
+/* ── DROP ZONE ───────────────────────────────────── */
+.drop-zone {
+border: 2px dashed #FF9933;
+border-radius: 10px;
+padding: 46px 20px;
+text-align: center;
+cursor: pointer;
+transition: background 0.25s, border-color 0.25s;
+}
+.drop-zone:hover, .drop-zone.drag-over {
+background: rgba(255,153,51,0.08);
+border-color: #ffc36b;
+}
+.drop-icon { font-size: 2.8rem; margin-bottom: 12px; }
+.btn-upload {
+display: inline-block;
+background: #FF9933;
+color: #0d1117;
+font-weight: 600;
+padding: 9px 22px;
+border-radius: 8px;
+cursor: pointer;
+margin: 10px 0;
+transition: background 0.2s;
+}
+.btn-upload:hover { background: #e6851a; }
+.note { font-size: 0.82rem; color: #6e7681; margin-top: 8px; }
+
+/* ── RESULT GRID ─────────────────────────────────── */
+.grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 20px;
+}
+@media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+
+.img-wrap {
+background: rgba(0,0,0,0.25);
+border-radius: 8px;
+display: flex; align-items: center; justify-content: center;
+min-height: 200px; padding: 10px;
+}
+.img-wrap img { max-width: 100%; max-height: 260px; border-radius: 6px; object-fit: contain; }
+
+/* ── LOADING ─────────────────────────────────────── */
+.loading { text-align: center; padding: 40px 0; }
+.spinner {
+width: 46px; height: 46px;
+border: 4px solid rgba(255,153,51,0.2);
+border-top-color: #FF9933;
+border-radius: 50%;
+animation: spin 0.75s linear infinite;
+margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── PREDICTION ──────────────────────────────────── */
+.badge {
+display: inline-block;
+padding: 3px 12px;
+border-radius: 20px;
+font-size: 0.82rem;
+font-weight: 600;
+margin-bottom: 10px;
+}
+.badge.high   { background: #0d2818; color: #3fb950; }
+.badge.medium { background: #2d1f00; color: #ffa657; }
+.badge.low    { background: #2d0b0b; color: #f85149; }
+
+#predLabel { font-size: 1.35rem; color: #f0f6fc; margin: 8px 0; }
+
+.bar-wrap {
+background: rgba(255,255,255,0.08);
+border-radius: 8px; height: 10px; margin: 10px 0;
+}
+.bar-fill {
+background: linear-gradient(90deg, #FF9933, #ffd580);
+height: 100%; border-radius: 8px;
+transition: width 0.9s ease;
+}
+.conf-text { font-size: 0.88rem; color: #8b949e; }
+
+/* ── TOP 5 ───────────────────────────────────────── */
+.top5 { margin-top: 18px; }
+.top5 h4 { color: #8b949e; font-size: 0.88rem; margin-bottom: 8px; }
+
+.t5-row {
+display: grid;
+grid-template-columns: 28px 1fr 52px;
+align-items: center;
+gap: 8px;
+padding: 6px 0;
+border-bottom: 1px solid rgba(255,255,255,0.05);
+font-size: 0.88rem;
+}
+.t5-rank  { color: #FF9933; font-weight: 700; }
+.t5-label { color: #c9d1d9; }
+.t5-conf  { color: #8b949e; text-align: right; }
+
+/* ── ERROR ───────────────────────────────────────── */
+.err {
+background: rgba(248,81,73,0.1);
+border: 1px solid #f85149;
+border-radius: 8px;
+padding: 14px;
+color: #ffa0a0;
+font-size: 0.9rem;
+}
+
+/* ── RESET BUTTON ────────────────────────────────── */
+.center { text-align: center; margin-top: 16px; }
+.btn-reset {
+background: transparent;
+border: 1px solid #FF9933;
+color: #FF9933;
+padding: 9px 24px;
+border-radius: 8px;
+font-size: 0.95rem;
+cursor: pointer;
+transition: all 0.2s;
+}
+.btn-reset:hover { background: #FF9933; color: #0d1117; }
+
+/* ── HIDDEN ──────────────────────────────────────── */
+.hidden { display: none !important; }

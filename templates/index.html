@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🚦 Indian Traffic Sign Recognition</title>
+<link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+<div class="container">
+
+    <header>
+    <div class="flag-strip">
+        <span class="saffron"></span>
+        <span class="white"></span>
+        <span class="green"></span>
+    </div>
+    <h1>🚦 Indian Traffic Sign Recognition</h1>
+    <p>Upload any Indian traffic sign image to identify it using Deep Learning</p>
+    </header>
+
+
+    <div class="card upload-card">
+    <div class="drop-zone" id="dropZone">
+        <div class="drop-icon">📂</div>
+        <p>Drag &amp; Drop image here  <strong>or</strong></p>
+        <label for="fileInput" class="btn-upload">Choose File</label>
+        <input type="file" id="fileInput" accept="image/*" hidden />
+        <p class="note">Supports PNG · JPG · JPEG · PPM &nbsp;|&nbsp; Max 5 MB</p>
+    </div>
+    </div>
+
+
+    <div id="resultSection" class="hidden">
+    <div class="grid">
+
+
+        <div class="card">
+        <h3>📷 Uploaded Image</h3>
+        <div class="img-wrap">
+            <img id="previewImg" src="" alt="Uploaded traffic sign" />
+        </div>
+        </div>
+
+
+        <div class="card">
+        <h3>🎯 Prediction</h3>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Analyzing sign...</p>
+        </div>
+
+        <div id="predBox" class="hidden">
+            <span id="badge" class="badge"></span>
+            <h2 id="predLabel"></h2>
+            <div class="bar-wrap">
+            <div class="bar-fill" id="barFill"></div>
+            </div>
+            <p id="confText" class="conf-text"></p>
+
+            <div class="top5">
+            <h4>Top 5 Predictions</h4>
+            <div id="top5List"></div>
+            </div>
+        </div>
+
+        <div id="errBox" class="err hidden"></div>
+        </div>
+    </div>
+
+    <div class="center">
+        <button class="btn-reset" onclick="reset()">🔄 Try Another Image</button>
+    </div>
+    </div>
+
+</div>
+
+<script>
+    const dropZone   = document.getElementById('dropZone');
+    const fileInput  = document.getElementById('fileInput');
+
+    dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    processFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', e => processFile(e.target.files[0]));
+
+    function processFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        document.getElementById('previewImg').src = e.target.result;
+        show('resultSection');
+        hide('predBox');
+        hide('errBox');
+        show('loading');
+        uploadPredict(file);
+    };
+    reader.readAsDataURL(file);
+    }
+
+    function uploadPredict(file) {
+    const fd = new FormData();
+    fd.append('file', file);
+
+    fetch('/predict', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+        hide('loading');
+        if (data.error) { showErr(data.error); return; }
+
+        document.getElementById('predLabel').textContent = data.prediction;
+        document.getElementById('confText').textContent  = `Confidence: ${data.confidence}%`;
+        document.getElementById('barFill').style.width   = data.confidence + '%';
+
+        const badge = document.getElementById('badge');
+        if (data.confidence >= 90) {
+            badge.textContent  = '✅ High Confidence';
+            badge.className    = 'badge high';
+        } else if (data.confidence >= 60) {
+            badge.textContent  = '⚠️ Medium Confidence';
+            badge.className    = 'badge medium';
+        } else {
+            badge.textContent  = '❗ Low Confidence';
+            badge.className    = 'badge low';
+        }
+
+        document.getElementById('top5List').innerHTML = data.top5.map((item, i) => `
+            <div class="t5-row">
+            <span class="t5-rank">#${i + 1}</span>
+            <span class="t5-label">${item.label}</span>
+            <span class="t5-conf">${item.confidence}%</span>
+            </div>
+        `).join('');
+
+        show('predBox');
+        })
+        .catch(() => { hide('loading'); showErr('Server error. Please try again.'); });
+    }
+
+    function showErr(msg) {
+    const box = document.getElementById('errBox');
+    box.textContent = '❌ ' + msg;
+    box.classList.remove('hidden');
+    }
+
+    function show(id) { document.getElementById(id).classList.remove('hidden'); }
+    function hide(id) { document.getElementById(id).classList.add('hidden'); }
+    function reset() {
+    hide('resultSection');
+    fileInput.value = '';
+    }
+</script>
+</body>
+</html>
